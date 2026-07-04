@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-coffee-50: #FBF7F2;
+  --color-coffee-100: #F3E7D6;
+  --color-coffee-200: #E5CBA8;
+  --color-coffee-300: #D3A874;
+  --color-coffee-400: #BC8650;
+  --color-coffee-500: #9C6B3B;
+  --color-coffee-600: #7C5330;
+  --color-coffee-700: #5F3F27;
+  --color-coffee-800: #46301F;
+  --color-coffee-900: #2E1F16;
+
+  --color-cream-50: #FFFDF9;
+  --color-cream-100: #FBF3E6;
+
+  --font-display: "Georgia", "Times New Roman", serif;
+}
+
+body {
+  background-color: var(--color-cream-50);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.35s ease-out;
+}
+
+@keyframes softPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(188, 134, 80, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(188, 134, 80, 0);
+  }
+}
+
+.animate-soft-pulse {
+  animation: softPulse 2.4s ease-out infinite;
+}
