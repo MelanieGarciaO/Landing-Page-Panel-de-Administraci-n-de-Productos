@@ -28,7 +28,7 @@ const HOURS = [
 
 const ADDRESS = "Av. Siempre Viva 123, Guayaquil, Ecuador";
 const WHATSAPP_NUMBER = "593991234567";
-const INSTAGRAM_HANDLE = "cafearoma";
+const INSTAGRAM_HANDLE = "cafearoma.ec";
 
 const TIMELINE = [
   { year: "2013", text: "Abrimos nuestras puertas con una tostadora prestada y muchas ganas." },
@@ -362,8 +362,8 @@ function Contact() {
 
   const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed`;
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola, quiero más información sobre Café Aroma")}`;
-  const instagramUrl = `https://instagram.com/${INSTAGRAM_HANDLE}`;
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola, quiero reservar una mesa en Café Aroma")}`;
+  const instagramUrl = `https://www.instagram.com/cafearoma.ec`;
 
   return (
     <section id="contacto" className="py-24 lg:py-32 bg-coffee-900 text-cream-50">
@@ -487,7 +487,7 @@ function CTASection() {
 }
 
 function Footer({ onAdminClick }) {
-  const instagramUrl = `https://instagram.com/${INSTAGRAM_HANDLE}`;
+  const instagramUrl = `https://www.instagram.com/cafearoma.ec`;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}`;
 
   return (
