@@ -6,6 +6,7 @@ import {
   RefreshCw,
   AlertTriangle,
   BarChart3,
+  Bell,
   Download,
 } from "lucide-react";
 
@@ -14,17 +15,22 @@ import StatsCards from "../components/StatsCards.jsx";
 import StockByCategoryChart from "../components/StockByCategoryChart.jsx";
 import RecentProducts from "../components/RecentProducts.jsx";
 import ProductList from "../components/ProductList.jsx";
-import { getStats, exportProductsUrl } from "../api/products";
+import { getStats, getAlerts, exportProductsUrl } from "../api/products";
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  // La app "reports" puede estar desactivada desde settings.py (ENABLE_REPORTS).
-  // En ese caso el backend responde 503 y mostramos un mensaje distinto al de error.
+  // En la variante A (config_product.py) las apps "reports" y
+  // "notifications" no están registradas en config/urls.py, así que
+  // sus endpoints responden 404 (o 503 si el flag se apaga solo en runtime).
   const [reportsDisabled, setReportsDisabled] = useState(false);
+  const [alerts, setAlerts] = useState([]);
 
   const navigate = useNavigate();
+
+  const isFeatureDisabledError = (err) =>
+    err?.response?.status === 404 || err?.response?.status === 503;
 
   const loadStats = async () => {
     setLoading(true);
@@ -35,7 +41,7 @@ export default function Dashboard() {
       setError(false);
       setReportsDisabled(false);
     } catch (err) {
-      if (err?.response?.status === 503) {
+      if (isFeatureDisabledError(err)) {
         setReportsDisabled(true);
         setError(false);
       } else {
@@ -47,8 +53,19 @@ export default function Dashboard() {
     }
   };
 
+  const loadAlerts = async () => {
+    try {
+      const res = await getAlerts();
+      setAlerts(res.data.alerts);
+    } catch {
+      // Variante A: notificaciones desactivadas -> simplemente no se muestran.
+      setAlerts([]);
+    }
+  };
+
   useEffect(() => {
     loadStats();
+    loadAlerts();
   }, []);
 
   return (
@@ -111,6 +128,21 @@ export default function Dashboard() {
 
       </section>
 
+      {/* NOTIFICACIONES (app "notifications", variante B) */}
+      {alerts.length > 0 && (
+        <div className="mb-8 rounded-2xl border border-orange-200 bg-orange-50 p-5 flex items-start gap-3">
+          <Bell className="text-orange-600 flex-shrink-0 mt-0.5" size={22} />
+          <div>
+            <h4 className="font-bold text-orange-700">
+              {alerts.length} producto(s) con stock bajo
+            </h4>
+            <p className="text-orange-600 text-sm mt-1">
+              {alerts.map((a) => a.mensaje).join(" ")}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* CARGANDO */}
       {loading && (
         <div className="rounded-3xl bg-white shadow-md border border-gray-200 p-12 text-center">
@@ -128,26 +160,28 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* REPORTES DESACTIVADOS (ENABLE_REPORTS = False en settings.py) */}
+      {/* VARIANTE BÁSICA (PRODUCT_VARIANT = 'A' en config_product.py) */}
       {!loading && reportsDisabled && (
         <div className="rounded-3xl border border-amber-200 bg-amber-50 p-8 text-center">
+
           <div className="w-16 h-16 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-4">
             <BarChart3 className="text-amber-600" size={30} />
           </div>
 
           <h3 className="text-2xl font-bold text-amber-700">
-            Reportes desactivados
+            Estás en la variante básica
           </h3>
 
           <p className="text-amber-600 mt-2 max-w-md mx-auto">
-            La funcionalidad de estadísticas y exportación está apagada
-            (ENABLE_REPORTS = False). Actívala en settings.py para ver el
-            dashboard.
+            El dashboard de estadísticas, la exportación y las
+            notificaciones son parte de la variante completa (PRODUCT_B en
+            config_product.py). El CRUD de productos sigue disponible.
           </p>
 
           <div className="mt-8 border-t border-amber-200 pt-8">
             <ProductList />
           </div>
+
         </div>
       )}
 

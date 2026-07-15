@@ -15,7 +15,10 @@ STOCK_BAJO_UMBRAL = 5
 
 
 def _reports_disabled_response():
-    """Respuesta estándar cuando la funcionalidad de reportes está apagada."""
+    """Respuesta estándar cuando la funcionalidad de reportes está apagada.
+    Sirve como defensa adicional: aunque config/urls.py ya deja de registrar
+    estas rutas cuando ENABLE_REPORTS=False, esta verificación evita
+    sorpresas si la vista se llega a importar/usar desde otro lado."""
     return Response(
         {'detail': 'La funcionalidad de reportes está desactivada.'},
         status=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -25,7 +28,6 @@ def _reports_disabled_response():
 @api_view(['GET'])
 def stats(request):
     """Estadisticas agregadas de inventario para el dashboard."""
-    # Bandera de configuración: activa/desactiva la app de reportes.
     if not settings.ENABLE_REPORTS:
         return _reports_disabled_response()
 
@@ -73,7 +75,6 @@ def stats(request):
 @api_view(['GET'])
 def export_productos_csv(request):
     """Exporta el inventario de productos en formato CSV."""
-    # Misma bandera: si los reportes están desactivados, no se permite exportar.
     if not settings.ENABLE_REPORTS:
         return _reports_disabled_response()
 

@@ -38,9 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # app de usuario
+    # apps de usuario
     'core',
     'reports',
+    'notifications',
 
     # apps de dependencias
     'rest_framework',
@@ -142,4 +143,22 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5174',
 ]
 
-ENABLE_REPORTS = True
+# ---------------------------------------------------------------------------
+# Configuración de variabilidad del producto
+# ---------------------------------------------------------------------------
+# PRODUCT_VARIANT elige qué variante se está sirviendo:
+#   'A' -> sistema básico, sin funcionalidades extra.
+#   'B' -> sistema completo, con reportes y notificaciones.
+# Se puede fijar por variable de entorno (útil para CI/CD o para levantar
+# ambas variantes en paralelo con distinto puerto) o cambiando el default
+# aquí mismo para tomar una captura de cada variante.
+from config_product import PRODUCT_VARIANTS  # noqa: E402
+
+PRODUCT_VARIANT = os.environ.get('PRODUCT_VARIANT', 'B')  # 'A' o 'B'
+PRODUCT_CONFIG = PRODUCT_VARIANTS.get(PRODUCT_VARIANT, PRODUCT_VARIANTS['B'])
+
+# Feature flags derivados de la variante activa. Los usan tanto
+# config/urls.py (include condicional) como las vistas de reports/ y
+# notifications/ (chequeo en runtime, como defensa adicional).
+ENABLE_REPORTS = PRODUCT_CONFIG['ENABLE_REPORTS']
+ENABLE_NOTIFICATIONS = PRODUCT_CONFIG['ENABLE_NOTIFICATIONS']
