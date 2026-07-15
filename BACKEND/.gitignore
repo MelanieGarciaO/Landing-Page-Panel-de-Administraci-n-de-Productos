@@ -64,7 +64,8 @@ db.sqlite3-journal
 *.sqlite
 *.sqlite3
 
-
+# Carpeta de media
+media/
 
 
 

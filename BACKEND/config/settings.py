@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # app de usuario
     'core',
+    'reports',
 
     # apps de dependencias
     'rest_framework',
@@ -140,3 +141,5 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:5174',
 ]
+
+ENABLE_REPORTS = True
