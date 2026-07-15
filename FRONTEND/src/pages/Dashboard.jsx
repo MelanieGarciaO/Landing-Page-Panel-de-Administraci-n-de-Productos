@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   RefreshCw,
   AlertTriangle,
+  BarChart3,
 } from "lucide-react";
 
 import AdminLayout from "../components/AdminLayout.jsx";
@@ -18,6 +19,9 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  // La app "reports" puede estar desactivada desde settings.py (ENABLE_REPORTS).
+  // En ese caso el backend responde 503 y mostramos un mensaje distinto al de error.
+  const [reportsDisabled, setReportsDisabled] = useState(false);
 
   const navigate = useNavigate();
 
@@ -28,8 +32,15 @@ export default function Dashboard() {
       const res = await getStats();
       setStats(res.data);
       setError(false);
-    } catch {
-      setError(true);
+      setReportsDisabled(false);
+    } catch (err) {
+      if (err?.response?.status === 503) {
+        setReportsDisabled(true);
+        setError(false);
+      } else {
+        setError(true);
+        setReportsDisabled(false);
+      }
     } finally {
       setLoading(false);
     }
@@ -113,6 +124,29 @@ export default function Dashboard() {
             Espere unos segundos.
           </p>
 
+        </div>
+      )}
+
+      {/* REPORTES DESACTIVADOS (ENABLE_REPORTS = False en settings.py) */}
+      {!loading && reportsDisabled && (
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-8 text-center">
+          <div className="w-16 h-16 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-4">
+            <BarChart3 className="text-amber-600" size={30} />
+          </div>
+
+          <h3 className="text-2xl font-bold text-amber-700">
+            Reportes desactivados
+          </h3>
+
+          <p className="text-amber-600 mt-2 max-w-md mx-auto">
+            La funcionalidad de estadísticas y exportación está apagada
+            (ENABLE_REPORTS = False). Actívala en settings.py para ver el
+            dashboard.
+          </p>
+
+          <div className="mt-8 border-t border-amber-200 pt-8">
+            <ProductList />
+          </div>
         </div>
       )}
 
