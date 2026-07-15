@@ -2,24 +2,31 @@ import axios from 'axios';
 
 const apiURl = 'http://localhost:8000/api/producto/'; // URL de la API de Productos (Backend)
 const reportsURl = 'http://localhost:8000/api/reports/'; // URL de la API de Reportes (app independiente)
+const notificationsURl = 'http://localhost:8000/api/notifications/'; // URL de la API de Notificaciones (app independiente)
 
 const productsAPI = axios.create({
     baseURL: apiURl,
 });
 
-// Cliente separado para la app "reports". Cuando ENABLE_REPORTS = False en el
-// backend, estos endpoints responden 503 en lugar de datos.
+// Clientes separados para las apps opcionales. Cuando su feature flag está
+// apagado (variante A en config_product.py), config/urls.py ni siquiera
+// registra estas rutas -> el backend responde 404.
 const reportsAPI = axios.create({
     baseURL: reportsURl,
 });
 
-export const getProducts = async () => productsAPI.get();
-export const getProduct = async (id) => productsAPI.get(`${id}/`);
-export const createProduct = async (formData) => productsAPI.post('', formData);
-export const updateProduct = async (id, formData) => productsAPI.put(`${id}/`, formData);
-export const deleteProduct = async (id) => productsAPI.delete(`${id}/`);
-export const getStats = async () => reportsAPI.get('stats/');
-export const exportProductsUrl = `${reportsURl}export/`;
+const notificationsAPI = axios.create({
+    baseURL: notificationsURl,
+});
+
+export const getProducts = async () => productsAPI.get(); // Obtener Productos del Backend
+export const getProduct = async (id) => productsAPI.get(`${id}/`); // Obtener un Producto por ID
+export const createProduct = async (formData) => productsAPI.post('', formData); // Crear Producto
+export const updateProduct = async (id, formData) => productsAPI.put(`${id}/`, formData); // Actualizar Producto
+export const deleteProduct = async (id) => productsAPI.delete(`${id}/`); // Eliminar Producto por ID
+export const getStats = async () => reportsAPI.get('stats/'); // Estadisticas para el dashboard (app reports)
+export const exportProductsUrl = `${reportsURl}export/`; // Descarga CSV (app reports)
+export const getAlerts = async () => notificationsAPI.get('alerts/'); // Alertas de stock bajo (app notifications)
 
 export const CATEGORIAS = [
   { value: 'cafe', label: 'Café' },

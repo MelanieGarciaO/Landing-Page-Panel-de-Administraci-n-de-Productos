@@ -22,8 +22,17 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('core.api.urls')),
-    path('api/reports/', include('reports.api.urls')),
 ]
+
+# Variabilidad del producto (ver config_product.py / settings.PRODUCT_VARIANT):
+# las rutas de reportes y notificaciones solo se registran si la variante
+# activa las tiene habilitadas. En la variante A (básica) estas URLs ni
+# siquiera existen -> piden un 404, no un simple flag apagado.
+if settings.ENABLE_REPORTS:
+    urlpatterns += [path('api/reports/', include('reports.api.urls'))]
+
+if settings.ENABLE_NOTIFICATIONS:
+    urlpatterns += [path('api/notifications/', include('notifications.api.urls'))]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
