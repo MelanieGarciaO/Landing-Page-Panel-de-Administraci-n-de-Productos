@@ -6,6 +6,7 @@ import {
   RefreshCw,
   AlertTriangle,
   BarChart3,
+  Download,
 } from "lucide-react";
 
 import AdminLayout from "../components/AdminLayout.jsx";
@@ -13,7 +14,7 @@ import StatsCards from "../components/StatsCards.jsx";
 import StockByCategoryChart from "../components/StockByCategoryChart.jsx";
 import RecentProducts from "../components/RecentProducts.jsx";
 import ProductList from "../components/ProductList.jsx";
-import { getStats } from "../api/products";
+import { getStats, exportProductsUrl } from "../api/products";
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -179,6 +180,18 @@ export default function Dashboard() {
       {/* CONTENIDO */}
       {!loading && !error && stats && (
         <>
+
+          {/* Botón de exportación (app "reports") */}
+          <div className="flex justify-end mb-6">
+            <a
+              href={exportProductsUrl}
+              download
+              className="flex items-center gap-2 rounded-xl bg-coffee-700 hover:bg-coffee-800 text-white px-5 py-2.5 font-semibold transition"
+            >
+              <Download size={18} />
+              Exportar CSV
+            </a>
+          </div>
 
           <StatsCards stats={stats} />
 
